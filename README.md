@@ -165,3 +165,127 @@ render() {
 ```
 
 We should now have the Title showing in the center of our AppBar, as well as the Login link showing in the far right!
+
+## Step 4: Organize Components with Import and Export
+
+We want to make sure that we are organizing our code correctly.  So far we have our AppBar in our App.js, which is not a very good place for it.  
+
+Lets start by creating a /Components folder under our /src folder, and creating a file named MenuBar.js and creating a basic React component shell
+```
+/src/Components/MenuBar.js
+--------------------------
+import React, { Component } from 'react';
+
+class MenuBar extends Component {
+  render() {
+
+    return (
+      <div className="MenuBar">
+
+      </div>
+    );
+  }
+}
+export default withStyles(styles)(MenuBar);
+```
+
+Now we can move our entire AppBar component, styles, and imports into our new MenuBar.js file
+```
+/src/Components/MenuBar.js
+--------------------------
+import React, { Component } from 'react';
+
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+
+import { withStyles } from 'material-ui/styles';
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+};
+
+class MenuBar extends Component {
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div className="MenuBar">
+        <AppBar position="static">
+            <Toolbar>
+              <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="title" color="inherit" className={classes.flex}>
+                Title
+              </Typography>
+              <Button color="inherit">Login</Button>
+            </Toolbar>
+          </AppBar>
+      </div>
+    );
+  }
+}
+export default withStyles(styles)(MenuBar);
+```
+We can remove these elements from the App.js file and import the component from our MenuBar.js file
+```
+import MenuBar from './Components/MenuBar'
+```
+```
+/src/App.js
+--------------------------
+import React, { Component } from 'react';
+import './App.css';
+import 'typeface-roboto';
+
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import teal from 'material-ui/colors/teal';
+
+import MenuBar from './Components/MenuBar'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
+
+class App extends Component {
+  
+  render() {
+    return (
+      <div className="App">
+        <MuiThemeProvider theme={theme}>
+          <MenuBar />
+        </MuiThemeProvider>
+      </div>
+    );
+  }
+}
+export default App;
+```
+
+We can now render that component in our App.js render return.
+```
+return (
+  <div className="App">
+    <MuiThemeProvider theme={theme}>
+      <MenuBar />
+    </MuiThemeProvider>
+  </div>
+);
+```
+
+Now we have a basic construct for how we can create and use new components!
