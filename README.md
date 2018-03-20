@@ -80,5 +80,88 @@ As long as you still have your app running, you should be able to navigate to ou
 
 We now have Material-UI and it's dependencies added to our React application!
 
+## Step 3: Add Custom Themes and Styling
+Resource: https://material-ui-next.com/customization/themes/
 
+Now that we have Material-UI, Lets customize our themes a little!
 
+First we need import MuiThemeProvider into our App.js file
+```
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+```
+
+Then lets create an empty theme, as a place holder, above our App class.
+```
+const theme = createMuiTheme();
+```
+
+Now we need to wrap everything in our render method inside of our provider
+```
+function App() {
+  return (
+    <MuiThemeProvider theme={theme}>
+      ...
+    </MuiThemeProvider>
+  );
+```
+
+From here we can change our theme by importing some colors and throwing some options into the createMuiTheme function that we called previously
+```
+import teal from 'material-ui/colors/teal';
+...
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
+```
+
+Notice how the login link at the top of the page is shifted to the left?  Let's go ahead and complete our Theme and Styling section by adding some code to shift that over a bit.
+
+Lets start by importing withStyles into our App.js file.
+```
+import { withStyles } from 'material-ui/styles';
+```
+
+Now we can define some styles to add to our component
+```
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+};
+```
+
+Now we can eddit our render function and assign some classNames to our components
+```
+<AppBar position="static">
+  <Toolbar>
+    <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+      <MenuIcon />
+    </IconButton>
+    <Typography variant="title" color="inherit" className={classes.flex}>
+      Title
+    </Typography>
+    <Button color="inherit">Login</Button>
+  </Toolbar>
+</AppBar>
+```
+
+In order to have access to the 'classes' property, we need to create it by passing the styles const into the withStyles function in our export at the bottom of App.js.
+```
+export default withStyles(styles)(App);
+```
+As well as pull the class property from this.prop in our render function in App.js
+```
+render() {
+    const { classes } = this.props;
+```
+
+We should now have the Title showing in the center of our AppBar, as well as the Login link showing in the far right!
