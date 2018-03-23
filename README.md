@@ -289,3 +289,74 @@ return (
 ```
 
 Now we have a basic construct for how we can create and use new components!
+
+
+## Step 4: React Router
+
+Resource: https://www.youtube.com/watch?v=l9eyot_IXLY
+
+React Router will give us the ability to route our users to components in our Single Page Application.  
+
+The first thing we will need to do is install React Router and it's dependencies.
+
+```
+npm install react-router-dom
+```
+
+Once we have react router installed, we can create our Routes.js file inside of our src directory
+
+```
+import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import Home from './Components/Home';
+import SimpleCard from './Components/SimpleCard';
+
+export default () => (
+  <BrowserRouter>
+    <Switch>
+      <Route path="/home" exact component={Home} />
+      <Route path="/" component={SimpleCard} />
+    </Switch>
+  </BrowserRouter>
+);
+```
+
+Note:  We have / defined last in the switch, with no 'exact' keyword, so that all non-matching URLs will go to our route url.
+
+Now we need to import this router file into our App.js file.
+
+```
+...
+import Routes from './Routes';
+...
+<MuiThemeProvider theme={theme}>
+  <MenuBar />
+  <Routes />
+</MuiThemeProvider>
+...
+```
+
+Now that we have our router setup, we need to create the Home.js and SimpleCard.js components that we specified in the Routes.js file.
+
+Note: SimpleCard.js is a copy of the [example here](https://material-ui-next.com/demos/cards/), but with the Card style changed to:
+```
+card: {
+    width: 275,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 30,
+  },
+```
+```
+/Components/Home.js
+--------------------------
+import React from 'react';
+
+export default () => <div>Home</div>;
+```
+
+Now you can see that when you navigate to http://localhost:3000/home you are greeted with a text of 'Home' and when you navigate anywhere else, you can see our Simple Card from the Material-UI demo!
+
+Now we have a construct for controlling the flow of our application.  With Router V4, we also have the ability to use the render feature to pass properties to our component to allow for history, location, etc.
+--------------------------

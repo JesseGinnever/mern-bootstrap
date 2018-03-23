@@ -5,7 +5,8 @@ import 'typeface-roboto';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import teal from 'material-ui/colors/teal';
 
-import MenuBar from './Components/MenuBar'
+import MenuBar from './Components/MenuBar';
+import Routes from './Routes';
 
 const theme = createMuiTheme({
   palette: {
@@ -20,6 +21,7 @@ class App extends Component {
       <div className="App">
         <MuiThemeProvider theme={theme}>
           <MenuBar />
+          <Routes />
         </MuiThemeProvider>
       </div>
     );
