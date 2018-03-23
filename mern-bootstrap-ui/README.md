@@ -540,6 +540,74 @@ To do this, we will need to install CORS in our server directory
 >npm install cors
 ```
 
+## Step 6: Connect React and Node.js
+
+Now that our service is fleshed out and our UI is ready, lets feed data from our service into our front end.
+
+Let's start by creating a service in react to call our Node.js API
+
+```
+/mern-bootstrap-ui/src/Services/HelloService.js
+-----------------------------------------------
+
+const apiEndpoint = "http://localhost:5000"
+var HelloService = {};
+
+HelloService.getGreeting = function() {
+    return fetch(apiEndpoint + "/api/hello");
+}
+
+export default HelloService
+```
+
+Now we just need to modify our Home.js component to call this service and render the results
+
+```
+/mern-bootstrap-ui/src/Components/Home.js
+-----------------------------------------------
+import React, { Component } from 'react';
+
+import HelloService from '../Services/HelloService'
+import { withStyles } from 'material-ui/styles';
+
+const styles = {
+};
+
+class Home extends Component {
+  state = {
+    response: ''
+  };
+
+  componentDidMount() {
+    HelloService.getGreeting()
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          response: responseJson.express,
+        });
+        console.log(responseJson.express)
+        console.log("test")
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div className="Home">
+        {this.state.response}
+      </div>
+    );
+  }
+}
+export default withStyles(styles)(Home);
+```
+
+Now when we refresh the UI and Server and visit http://localhost:3000/home we will see 'Hello From Express' on our Home component!
+
 
 
 
