@@ -359,4 +359,93 @@ export default () => <div>Home</div>;
 Now you can see that when you navigate to http://localhost:3000/home you are greeted with a text of 'Home' and when you navigate anywhere else, you can see our Simple Card from the Material-UI demo!
 
 Now we have a construct for controlling the flow of our application.  With Router V4, we also have the ability to use the render feature to pass properties to our component to allow for history, location, etc.
---------------------------
+
+## Step 5: Node.js and Express
+
+Now that we have the shell of a React front end application, lets create go ahead and create a Node.js server using Express so we can serve some data to our React front end!
+
+The first thing we will want to do change up our file structure a bit to account for having multiple deployable portions of our stack.
+This will begin buy moving all of our existing files underneath a new directory called 'mern-bootstrap-ui'.  After moving these files, you should be able to 'npm start' inside the new directory just as you would the 'mern-bootstrap' directory.
+```
+/mern-bootstrap/mern-bootstrap-ui/'
+```
+Now lets create a new directory where our Node.js server will live
+```
+/mern-bootstrap/mern-bootstrap-server/'
+```
+
+Let's navigate our new server directory and create a package.json file
+
+```
+{
+  "name": "mern-bootstrap-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+  }
+}
+```
+
+We will be using nodemon to start our Node.js server, so let's install nodemon inside of our server directory
+
+```
+>npm install nodemon
+```
+
+We can now create a very basic Node.js server.js file in our server directory
+
+```
+const express = require('express');
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.get('/api/hello', (req, res) => {
+  res.send({ express: 'Hello From Express' });
+});
+
+app.listen(port, () => console.log(`Listening on port ${port}`));
+```
+
+To be able to use Express, first we need to install it in our server directory
+
+```
+>npm install nodemon
+```
+
+We can now create a very basic Node.js server.js file in our server directory
+
+```
+>npm install express
+```
+
+Now we can npm install and npm start
+
+```
+>npm install
+...
+>npm start
+```
+
+You will now be able to see your endpoint return on http://localhost:5000/api/hello
+
+before we move on, lets make sure we create a .gitignore for our new server
+```
+/mern-bootstrap-server/.gitignore
+-------------------------------------
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+```
+
+
+
+
