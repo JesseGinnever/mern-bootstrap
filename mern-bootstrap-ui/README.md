@@ -445,6 +445,100 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 ```
+## Step 5: Refactor Node.js Services
+
+In order to ready our Node.js server for more services, lets build a slightly different file structure.
+
+To be mindful of how we want to separate our services in the future, lets create a HelloService.js for handling our greeting service.
+
+```
+/mern-bootstrap-server/routes/hello.js
+------------------------------------------------
+const express = require('express');
+const router = express.Router();
+const cors = require('cors');
+
+// need this to connect to localhost
+router.use(cors());
+
+/* GET greeting. */
+router.get('/', (req, res) => {
+  res.send({ express: 'Hello From Express' });
+});
+
+module.exports = router;
+```
+
+Now lets create an api.js file for gathering our separate services that we will eventually create 
+
+```
+/mern-bootstrap-server/routes/api.js
+------------------------------------------------
+// Import dependencies
+const express = require('express');
+const router = express.Router();
+const hello =  require('./hello');
+
+router.use('/hello', hello);
+
+router.use(function(req, res, next) {
+    // log each request to the console
+    console.log(req.method, req.url);
+    // continue doing what we were doing and go to the route
+    next(); 
+});
+
+/* GET api listing. */
+router.get('/', (req, res) => {
+        res.send('Welcome to the Node.js server!');
+});
+
+module.exports = router;
+```
+
+Now lets change up our server.js a little to account for this new structure
+
+```
+/mern-bootstrap-server/server.js
+------------------------------------------------
+// Get dependencies
+const express = require('express');
+const path = require('path');
+const http = require('http');
+const bodyParser = require('body-parser');
+
+// Get our API routes
+const api = require('./routes/api');
+
+const app = express();
+
+// Set our api routes
+app.use('/api', api);
+
+/**
+ * Get port from environment and store in Express.
+ */
+const port = process.env.PORT || '5000';
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+server.listen(port, () => console.log(`API running on localhost:${port}`));
+```
+
+One last thing we will need to do before this call will work locally is make some CORS changes so we can call from UI to API while deployed locally.
+
+To do this, we will need to install CORS in our server directory
+
+```
+>npm install cors
+```
 
 
 

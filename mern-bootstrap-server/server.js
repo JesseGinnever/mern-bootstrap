@@ -1,10 +1,29 @@
+// Get dependencies
 const express = require('express');
+const path = require('path');
+const http = require('http');
+const bodyParser = require('body-parser');
+
+// Get our API routes
+const api = require('./routes/api');
 
 const app = express();
-const port = process.env.PORT || 5000;
 
-app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Hello From Express' });
-});
+// Set our api routes
+app.use('/api', api);
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+/**
+ * Get port from environment and store in Express.
+ */
+const port = process.env.PORT || '5000';
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+server.listen(port, () => console.log(`API running on localhost:${port}`));
