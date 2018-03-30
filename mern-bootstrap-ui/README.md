@@ -2,6 +2,21 @@
 
 One Paragraph of project description goes here
 
+## Final: How to deploy
+1. Start MongoDB
+```
+mongod --dbpath=/data
+```
+2. Start Node.js server
+```
+mern-bootstrap\mern-bootstrap-server>nodemon server.js
+```
+3. npm start
+```
+mern-bootstrap\mern-bootstrap-ui>npm start
+```
+
+
 ## Step 1: Create React App
 
 Resource: https://github.com/facebook/create-react-app#creating-an-app
@@ -607,6 +622,297 @@ export default withStyles(styles)(Home);
 ```
 
 Now when we refresh the UI and Server and visit http://localhost:3000/home we will see 'Hello From Express' on our Home component!
+
+## Step 7: Connect Node.js with MongoDB
+
+Now that we have Node.js feeding our React UI dynamically, we want a database to feed our Node.js server.
+
+Let's start by installing Mongoose
+```
+npm install mongoose
+```
+We will also want to install body-parser to handle some Express POST requests for filling our database
+```
+npm install body-parser
+```
+
+Now let's go ahead and start up our mongo database
+```
+mongod --dbpath=/data
+```
+
+First we want to connect our server to MongoDB, and then we want to add some basic functionality, lets add some methods to create and delete Greetings from our mongo database
+
+We will connect to MongoDB, add the Body-Parser so we can read post properties, and add some get some removal methods to hello.js
+
+```
+hello.js
+------------------------------------
+const express = require('express');
+const router = express.Router();
+const cors = require('cors');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+// need this to connect to localhost
+router.use(cors());
+router.use(bodyParser.json()); 
+router.use(bodyParser.urlencoded({ extended: true }));
+
+//Set up default mongoose connection
+var dbHost = 'mongodb://127.0.0.1/my_database';
+
+const options = {
+};
+// Connect to mongodb
+mongoose.connect(dbHost, options);
+
+// create mongoose schema
+const greetingSchema = new mongoose.Schema({
+  text: String
+});
+
+// create mongoose model
+const Greeting = mongoose.model('Greetings', greetingSchema);
+
+//remove all greetings
+Greeting.remove({}, function (err) {
+  if (err) return handleError(err);
+});
+
+/* GET greeting. */
+router.get('/', (req, res) => {
+  Greeting.find({}, (err, greeting) => {
+    if (err) res.status(500).send(error)
+
+    res.status(200).json(greeting);
+  });
+});
+
+router.post('/create', (req, res) => {
+  let greeting = new Greeting({
+    text: req.body.text
+  })
+
+  greeting.save(error => {
+      if (error) res.status(500).send(error);
+      res.status(201).json({
+          message: 'greeting created successfully'
+      });
+  });
+});
+
+router.delete('/', (req, res) => {
+  Greeting.remove({}, function (err) {
+    if (err) return handleError(err);
+    res.status(201).json({
+      message: 'all greetings removed!'
+  });
+  });
+});
+
+router.delete('/:greetingId', (req, res) => {
+  Greeting.remove({_id: req.params.greetingId}, function (err) {
+    if (err) return handleError(err);
+    res.status(201).json({
+      message: 'greeting removed!'
+    });
+  });
+});
+
+module.exports = router;
+```
+
+How that we have new services on our server, let's create matching services on our React application in HelloService.js
+```
+const apiEndpoint = "http://localhost:5000"
+var HelloService = {};
+
+HelloService.getGreeting = function() {
+    return fetch(apiEndpoint + "/api/hello");
+}
+
+HelloService.postGreeting = function(greeting) {
+    let greetingJson = {
+        text: greeting
+    }
+    return fetch(apiEndpoint + "/api/hello/create", {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(greetingJson)
+    });
+}
+
+HelloService.deleteGreetings = function(greeting) {
+    return fetch(apiEndpoint + "/api/hello", {
+        method: 'DELETE'
+    });
+}
+
+HelloService.deleteGreeting = function(greetingId) {
+    return fetch(apiEndpoint + "/api/hello/" + greetingId, {
+        method: 'DELETE'
+    });
+}
+
+export default HelloService
+```
+
+This will add some services for our React application to call into our Node.js server to create and delete Greetings
+
+Finally, let's add some input, a table, and some service calls to our Home.js so we can manage our greetings in our MongoDB!
+
+```
+import React, { Component } from 'react';
+
+import HelloService from '../Services/HelloService'
+import { withStyles } from 'material-ui/styles';
+
+import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+
+const styles = theme => ({
+  root: theme.mixins.gutters({
+    paddingTop: 16,
+    paddingBottom: 16,
+    width: '40%',
+    marginTop: theme.spacing.unit * 3,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  }),
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  button: {
+    margin: theme.spacing.unit,
+  },
+  deleteButton: {
+    margin: theme.spacing.unit,
+    float: 'right',
+  }
+});
+
+class Home extends Component {
+  state = {
+    greetings: ['404 Greetings Not Found!'],
+    greeting: ''
+  };
+
+  componentDidMount() {
+    this.getAllGreetings();
+  }
+
+  getAllGreetings() {
+    HelloService.getGreeting()
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          greetings: responseJson,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  postGreetingAndReset() {
+    HelloService.postGreeting(this.state.greeting).then((response) => response.json())
+      .then((responseJson) => {
+        this.getAllGreetings()
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  clearGreetingAndReset() {
+    HelloService.deleteGreetings().then((responseJson) => {
+      this.getAllGreetings()
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  deleteGreetingAndReset(greetingId) {
+    HelloService.deleteGreeting(greetingId).then((responseJson) => {
+      this.getAllGreetings()
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div className="Home">
+        <Paper className={classes.root} elevation={4}>
+          <Typography variant="headline" component="h3">
+            Enter Greetings!
+          </Typography>
+          <TextField
+            id="greeting-input"
+            label="Greeting"
+            placeholder="Hello, Ladie!"
+            className={classes.textField}
+            margin="normal"
+            value={this.state.greeting}
+            onChange={(event) => this.setState({greeting: event.target.value})}
+          />
+          <Button variant="raised" color="primary" className={classes.button} onClick={(e) => HelloService.postGreeting(this.state.greeting)}>
+           Submit
+          </Button>
+          <Button variant="raised" color="primary" className={classes.button} onClick={this.postGreetingAndReset.bind(this)}>
+           Submit and Reset
+          </Button>
+          <Button variant="raised" color="secondary" className={classes.button} onClick={this.clearGreetingAndReset.bind(this)}>
+           Clear and Reset
+          </Button>
+        </Paper>
+        <Paper className={classes.root} elevation={4}>
+          <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Greeting</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.state.greetings.map(n => {
+                return (
+                  <TableRow key={n._id}>
+                    <TableCell>{n.text}</TableCell>
+                    <TableCell>
+                      <Button variant="raised" color="secondary" className={classes.deleteButton} onClick={(e) => this.deleteGreetingAndReset(n._id)}>
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Paper>
+      </div>
+    );
+  }
+}
+export default withStyles(styles)(Home);
+```
+
+We have added a few buttons here to demonstrate adding a greeting, adding a greeting and fetching on the callback, removing all greetings and fetching on the callback, and deleting a specific greeting.  This shows the several ways to handle onClicks and Callbacks.
+
+
 
 
 
