@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import HelloService from '../Services/HelloService'
 import { withStyles } from 'material-ui/styles';
+import Grid from 'material-ui/Grid';
 
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
@@ -25,6 +26,7 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit,
+    width: '100%'
   },
   deleteButton: {
     margin: theme.spacing.unit,
@@ -90,26 +92,36 @@ class Home extends Component {
       <div className="Home">
         <Paper className={classes.root} elevation={4}>
           <Typography variant="headline" component="h3">
-            Enter Greetings!
-          </Typography>
-          <TextField
-            id="greeting-input"
-            label="Greeting"
-            placeholder="Hello, Ladie!"
-            className={classes.textField}
-            margin="normal"
-            value={this.state.greeting}
-            onChange={(event) => this.setState({greeting: event.target.value})}
-          />
-          <Button variant="raised" color="primary" className={classes.button} onClick={(e) => HelloService.postGreeting(this.state.greeting)}>
-           Submit
-          </Button>
-          <Button variant="raised" color="primary" className={classes.button} onClick={this.postGreetingAndReset.bind(this)}>
-           Submit and Reset
-          </Button>
-          <Button variant="raised" color="secondary" className={classes.button} onClick={this.clearGreetingAndReset.bind(this)}>
-           Clear and Reset
-          </Button>
+              Enter Greetings!
+            </Typography>
+          <Grid container spacing={24}>
+            <Grid item sm={12}>
+              <TextField
+                id="greeting-input"
+                label="Greeting"
+                placeholder="Hello, Ladie!"
+                className={classes.textField}
+                margin="normal"
+                value={this.state.greeting}
+                onChange={(event) => this.setState({greeting: event.target.value})}
+              />
+            </Grid>
+            <Grid item sm={12} md={4}>
+              <Button variant="raised" color="primary" className={classes.button} onClick={(e) => HelloService.postGreeting(this.state.greeting)}>
+              Submit
+              </Button>
+            </Grid>
+              <Grid item sm={12} md={4}>
+              <Button variant="raised" color="primary" className={classes.button} onClick={this.postGreetingAndReset.bind(this)}>
+              Submit and Reset
+              </Button>
+            </Grid>
+            <Grid item sm={12} md={4}>
+              <Button variant="raised" color="secondary" className={classes.button} onClick={this.clearGreetingAndReset.bind(this)}>
+              Clear and Reset
+              </Button> 
+            </Grid>
+          </Grid>
         </Paper>
         <Paper className={classes.root} elevation={4}>
           <Table className={classes.table}>
