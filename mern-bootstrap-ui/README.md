@@ -2,7 +2,18 @@
 
 One Paragraph of project description goes here
 
-## Final: How to deploy
+## Setup: Get the final application ready to deploy
+1. Install MongoDB
+
+2. Install dependencies 
+```
+\mern-bootstrap\mern-bootstrap-server> npm install
+```
+```
+\mern-bootstrap\mern-bootstrap-ui> npm install
+```
+
+## Deploy: How to deploy
 1. Start MongoDB
 ```
 mongod --dbpath=/data
@@ -11,10 +22,47 @@ mongod --dbpath=/data
 ```
 mern-bootstrap\mern-bootstrap-server>nodemon server.js
 ```
+or for debuggin
+```
+mern-bootstrap\mern-bootstrap-server>nodemon --inspect server.js
+```
+
 3. npm start
 ```
 mern-bootstrap\mern-bootstrap-ui>npm start
 ```
+
+## Debug in Visual Studio Code: How to debug Node.js
+
+To debug in VS, we need to start our node server in debug mode with --inspect
+```
+nodemon --inspect server.js
+```
+
+Then we need to add configurations to .vscode/launch.json
+```
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+    "name": "Attach to Process",
+    "type": "node",
+    "request": "attach",
+    "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/mern-bootstrap-server\\server.js"
+    }
+  ]
+}
+```
+
+Now we can use VS to launch Attach to Process and debug our Node.js server via our IDE
+
+
 
 
 ## Step 1: Create React App
@@ -912,8 +960,184 @@ export default withStyles(styles)(Home);
 
 We have added a few buttons here to demonstrate adding a greeting, adding a greeting and fetching on the callback, removing all greetings and fetching on the callback, and deleting a specific greeting.  This shows the several ways to handle onClicks and Callbacks.
 
+## Step 8: Add Basic Redux
+https://www.penta-code.com/how-to-add-redux-to-create-react-app/
+Resource: https://www.youtube.com/watch?v=bzI7SKBeZmQ
 
+Now that we have a basic functioning application with all of our components, lets add some example Redux for helping us manage our state.
 
+First we want to install redux and react-redux
 
+```
+npm install redux --save
+```
+```
+npm install react-redux --save
+```
 
+Now lets have some new components to show some very basic redux code
 
+First, let's add our Action in our UI under /src/Actions/cart.js
+```
+export const addToCart = (item) => {
+  return {
+      type: 'addToCard',
+      item
+  };
+}
+```
+
+Now we can create our reducer structure under /src/Reducers
+```
+cart.js
+------------------
+export default(state = [], payload) => {
+  switch (payload.type) {
+      case 'addToCard':
+          return [...state, payload.item];
+      default:
+          return state;
+  }
+};
+
+```
+```
+index.js
+------------------
+import cart from './cart';
+import { combineReducers } from 'redux';
+const rootReducer = combineReducers({
+    cart
+});
+export default rootReducer;
+```
+
+now let's create our store under our src directory
+```
+store.js
+------------------
+import { createStore } from 'redux';
+import rootReducer from  './Reducers';
+export default(initialState) => {
+    return createStore(rootReducer, initialState);
+}
+```
+
+Now we can include our store and provide it to our application in src/index.js
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import registerServiceWorker from './registerServiceWorker';
+import { Provider } from 'react-redux';
+import Store from './store';
+
+const StoreInstance = Store();
+
+ReactDOM.render(
+  <Provider store={StoreInstance}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+ );
+registerServiceWorker();
+```
+
+Finally, lets create some basic components to interact with our store and add a route to them.
+```
+src/Components/Cart.js
+------------------
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as cartActions from '../Actions/cart';
+import Shelf from './Shelf';
+class Cart extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    }
+  }
+  render() {
+    const cartList = this.props.cart.map((item, idx) => {
+        return <li key={idx}>{item}</li>;
+    });
+    return (
+      <div className="Cart">
+        <Shelf addToCart={this.props.actions.addToCart}/>
+        <h2>Shopping Bag</h2>
+        <ol>
+            {cartList}
+        </ol>
+      </div>
+    );
+  }
+}
+function mapStateToProps(state, props) {
+    return {
+        cart: state.cart
+    };
+}
+function mapDispatchToProps(dispatch) {
+    return {
+      actions: bindActionCreators(cartActions, dispatch)
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);
+```
+
+```
+src/Components/Shelf.js
+------------------
+import React, { Component } from 'react';
+
+class Shelf extends Component {
+  constructor(props) {
+    super(props);
+    this.onAddItemToCart = this.onAddItemToCart.bind(this);
+    this.state = {
+      shelfItems: [
+        'shampoo',
+        'chocolate',
+        'yogurt'
+      ]
+    }
+  }
+  onAddItemToCart(item) {
+    this.props.addToCart(item);
+  }
+  render() {
+    const shelfItems = this.state.shelfItems.map((item, idx) => {
+      return <li key={idx}><button onClick={() => this.onAddItemToCart(item)}>[+]</button>{item}</li>
+    });
+    return (
+      <div>
+          <h2>Store Shelf:</h2>
+          <ul>
+            {shelfItems}
+          </ul>
+      </div>
+    );
+  }
+}
+
+export default Shelf;
+```
+
+```
+src/Routes.js
+------------------
+....
+import Cart from './Components/Cart'
+
+export default () => (
+  <BrowserRouter>
+    <Switch>
+      <Route path="/home" exact component={Home} />
+      <Route path="/" component={Cart} />
+    </Switch>
+  </BrowserRouter>
+);
+
+```

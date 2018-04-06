@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+    "name": "Attach to Process",
+    "type": "node",
+    "request": "attach",
+    "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/mern-bootstrap-server\\server.js"
+    }
+  ]
+}
