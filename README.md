@@ -1,6 +1,7 @@
-# Project Title
+# MERN Bootstrap Tutorial
 
-One Paragraph of project description goes here
+This is a step-by-step documentation of how to bootstrap a MERN application.
+Steps 1 through 8 are isolated to individual commits for easy navigation of code state.
 
 ## Setup: Get the final application ready to deploy
 1. Install MongoDB
