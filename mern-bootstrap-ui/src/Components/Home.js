@@ -95,9 +95,9 @@ class Home extends Component {
     return (
       <div className="Home">
         <Paper className={classes.root} elevation={4}>
-          <Typography variant="headline" component="h3">
+          <Typography variant="h5" component="h3">
               Enter Greetings!
-            </Typography>
+          </Typography>
           <Grid container spacing={24}>
             <Grid item sm={12}>
               <TextField
@@ -111,17 +111,17 @@ class Home extends Component {
               />
             </Grid>
             <Grid item sm={12} md={4}>
-              <Button variant="raised" color="primary" className={classes.button} onClick={(e) => HelloService.postGreeting(this.state.greeting)}>
+              <Button variant="contained" color="primary" className={classes.button} onClick={(e) => HelloService.postGreeting(this.state.greeting)}>
               Submit
               </Button>
             </Grid>
               <Grid item sm={12} md={4}>
-              <Button variant="raised" color="primary" className={classes.button} onClick={this.postGreetingAndReset.bind(this)}>
+              <Button variant="contained" color="primary" className={classes.button} onClick={this.postGreetingAndReset.bind(this)}>
               Submit and Reset
               </Button>
             </Grid>
             <Grid item sm={12} md={4}>
-              <Button variant="raised" color="secondary" className={classes.button} onClick={this.clearGreetingAndReset.bind(this)}>
+              <Button variant="contained" color="secondary" className={classes.button} onClick={this.clearGreetingAndReset.bind(this)}>
               Clear and Reset
               </Button> 
             </Grid>
@@ -141,7 +141,7 @@ class Home extends Component {
                   <TableRow key={n._id}>
                     <TableCell>{n.text}</TableCell>
                     <TableCell>
-                      <Button variant="raised" color="secondary" className={classes.deleteButton} onClick={(e) => this.deleteGreetingAndReset(n._id)}>
+                      <Button variant="contained" color="secondary" className={classes.deleteButton} onClick={(e) => this.deleteGreetingAndReset(n._id)}>
                         Delete
                       </Button>
                     </TableCell>
