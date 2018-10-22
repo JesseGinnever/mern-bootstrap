@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import 'typeface-roboto';
 
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import teal from 'material-ui/colors/teal';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import teal from '@material-ui/core/colors/teal';
 
 import MenuBar from './Components/MenuBar';
 import Routes from './Routes';

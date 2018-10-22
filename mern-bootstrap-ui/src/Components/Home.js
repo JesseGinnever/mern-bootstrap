@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 
 import HelloService from '../Services/HelloService'
-import { withStyles } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import TextField from 'material-ui/TextField';
-import Button from 'material-ui/Button';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -124,8 +128,8 @@ class Home extends Component {
           </Grid>
         </Paper>
         <Paper className={classes.root} elevation={4}>
-          <Table className={classes.table}>
-            <TableHead>
+            <Table className={classes.table}>
+           <TableHead>
               <TableRow>
                 <TableCell>Greeting</TableCell>
                 <TableCell></TableCell>
